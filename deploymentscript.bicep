@@ -1,7 +1,5 @@
-/*
-create storage account
- - use required-properties
-*/
+param passphrase string
+
 resource stg 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: 'alfran${uniqueString(resourceGroup().id, 'alfran')}'
   location: resourceGroup().location
@@ -10,13 +8,6 @@ resource stg 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   }
   kind: 'StorageV2'
 }
-
-/* 
-create deployment script
- - use existing storage
-   * retrieve key with *new* listKeys()
- - use loadTextContent() to load the script
-*/
 
 resource dScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: 'alfrandscript'
@@ -30,6 +21,7 @@ resource dScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
       storageAccountKey: stg.listKeys().keys[0].value
     }
     scriptContent: loadTextContent('keygen.sh')
+    arguments: passphrase
   }
 }
 
